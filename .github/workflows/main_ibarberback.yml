@@ -64,3 +64,13 @@ jobs:
           app-name: 'ibarberBack'
           slot-name: 'Production'
           package: .
+
+      - name: 'FTP Upload'
+        uses: wsmoak/ftp-upload-action@v3
+        with:
+          server: ${{ secrets.AZURE_FTP_SERVER }}
+          username: ${{ secrets.AZURE_FTP_USERNAME }}
+          password: ${{ secrets.AZURE_FTP_PASSWORD }}
+          localDir: .
+
+
