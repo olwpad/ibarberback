@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the app
-        run: npm run build
-
       - name: Test the app
         run: npm test || exit 0  # Si no tienes pruebas, este paso se puede omitir
 
@@ -66,3 +63,4 @@ jobs:
           app-name: 'ibarberBack'
           slot-name: 'Production'
           package: .
+
