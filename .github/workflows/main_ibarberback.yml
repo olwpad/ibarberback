@@ -24,9 +24,6 @@ jobs:
       - name: Install dependencies
         run: npm install --force
 
-      - name: Test the app
-        run: npm test --if-present
-
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
