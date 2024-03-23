@@ -21,11 +21,11 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+      - name: Install dependencies
+        run: npm install --force
+
+      - name: Test the app
+        run: npm test --if-present
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
