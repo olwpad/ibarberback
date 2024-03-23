@@ -17,10 +17,10 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v2
         with:
-          node-version: '20.x'
+          node-version: '14.x'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --force
 
       - name: Test the app
         run: npm test || exit 0  # Si no tienes pruebas, este paso se puede omitir
@@ -55,7 +55,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FE34290D73D34E6786E3E331752C5CA9 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8CDC0D0B0F734A0A9605DCF963D5D008 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_025CFCDCAF974BFD855E30CB9A6EFEE1 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
@@ -63,4 +65,3 @@ jobs:
           app-name: 'ibarberBack'
           slot-name: 'Production'
           package: .
-
