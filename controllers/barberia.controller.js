@@ -253,8 +253,7 @@ export const deleteBarber = async (req, res) => {
 
   try {
     const token = req.headers.authorization;
-    const { usuario } = await verificarTokenYObtenerUsuario(token);
-    console.log(usuario)
+    await verificarTokenYObtenerUsuario(token);
     const updatedBarberia = await BarberiaModel.findOneAndUpdate(
       // Buscar la barbería que tiene un barbero con el ID dado
       { "barberos.usuario": barberoId },
