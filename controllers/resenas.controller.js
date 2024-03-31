@@ -32,8 +32,12 @@ export const crearResena = async (req, res) => {
       // Responder con la nueva reseña creada
       res.status(201).json(newReview);
     } catch (error) {
-      // Manejar cualquier error que ocurra durante el proceso
-      console.error('Error en la solicitud:', error);
+      if (error.message === "Token expirado") {
+        return res.status(401).json({ message: "Token expirado" });
+      }
+      if (error.message === "Token inválido") {
+        return res.status(401).json({ message: "Token inválido" });
+      }
       res.status(500).json({ message: 'Hubo un error al procesar tu solicitud' });
     }
   }
@@ -52,6 +56,9 @@ export const crearResena = async (req, res) => {
       if (error.message === "Token expirado") {
         return res.status(401).json({ message: "Token expirado" });
       }
+      if (error.message === "Token inválido") {
+        return res.status(401).json({ message: "Token inválido" });
+      }
         res.status(500).json({ message: 'Hubo un error al procesar tu solicitud' });
     }
 }
@@ -62,10 +69,12 @@ export const obtenerResenasTodos = async (req, res) => {
         const reviews = await Review.find().sort({ rating: -1 }).limit(5);
         res.status(200).json(reviews);
     } catch (error) {
-        if (error.message === "Token expirado") {
-            console.log("Token expirado");
-            return res.status(401).json({ message: "Token expirado" });
-        }
+      if (error.message === "Token expirado") {
+        return res.status(401).json({ message: "Token expirado" });
+      }
+      if (error.message === "Token inválido") {
+        return res.status(401).json({ message: "Token inválido" });
+      }
         console.error('Hubo un error al procesar la solicitud:', error);
         res.status(500).json({ message: 'Hubo un error al procesar tu solicitud' });
     }

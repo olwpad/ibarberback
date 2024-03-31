@@ -44,7 +44,12 @@ export const registroBarberia = async (req, res) => {
     const result = await newBarberia.save();
     res.status(201).json({ message: "Registro exitoso", data: result });
   } catch (error) {
-    console.error("Error al registrar la barbería:", error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -62,6 +67,9 @@ export const getBarberias = async (req, res) => {
   } catch (error) {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
     }
 
     res.status(500).json({ message: "Error interno del servidor" });
@@ -81,6 +89,9 @@ export const getBarberia = async (req, res) => {
   } catch (error) {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
     }
 
     res.status(500).json({ message: "Error interno del servidor" });
@@ -122,6 +133,9 @@ export const getBarberos = async (req, res) => {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
     }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -143,12 +157,13 @@ export const obtenerBarberosPorNombreBarberia = async (req, res) => {
 
     res.status(200).json({ barberos });
   } catch (error) {
-    if (error.message === "Token expirado") {
+       if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
     }
-    res
-      .status(500)
-      .json({ message: "Error al obtener los barberos", error: error.message });
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
+    res.status(500).json({ message: "Error al obtener los barberos", error: error.message });
   }
 };
 
@@ -192,15 +207,19 @@ export const updateBarberia = async (req, res) => {
 
     res.status(200).json(updatedBarberia);
   } catch (error) {
-    console.error("Error al actualizar la barbería:", error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 export const deleteBarberia = async (req, res) => {
-  const token = req.headers.authorization;
-  const { usuario } = await verificarTokenYObtenerUsuario(token);
-  
   try {
+    const token = req.headers.authorization;
+    const { usuario } = await verificarTokenYObtenerUsuario(token);
     // Buscar y eliminar la barbería
     const deletedBarberia = await BarberiaModel.findOneAndRemove({"dueño.usuario": usuario});
     
@@ -219,7 +238,12 @@ export const deleteBarberia = async (req, res) => {
 
     res.status(200).json({ message: "Barbería eliminada con éxito. Roles y estado de barberos actualizados." });
   } catch (error) {
-    console.error("Error al eliminar la barbería:", error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -228,6 +252,9 @@ export const deleteBarber = async (req, res) => {
   const barberoId = req.params.id;
 
   try {
+    const token = req.headers.authorization;
+    const { usuario } = await verificarTokenYObtenerUsuario(token);
+    console.log(usuario)
     const updatedBarberia = await BarberiaModel.findOneAndUpdate(
       // Buscar la barbería que tiene un barbero con el ID dado
       { "barberos.usuario": barberoId },
@@ -251,7 +278,12 @@ export const deleteBarber = async (req, res) => {
       res.status(404).json({ message: "Barbero no encontrado." });
     }
   } catch (error) {
-    console.error("Error al eliminar el barbero:", error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
@@ -321,6 +353,7 @@ export const postBarber = async (req, res) => {
       correo: infoBarbero.correo,
       especialidad: especialidad,
       experiencia: experiencia,
+      fotoPerfil:infoBarbero.fotoPerfil,
       _id: idBarbero
     };
 
@@ -328,6 +361,9 @@ export const postBarber = async (req, res) => {
   } catch (error) {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
     }
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -365,6 +401,9 @@ export const getBarberosall = async (req, res) => {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
     }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
 
     res.status(500).json({ error: "Error al obtener los barberos" });
   }
@@ -373,6 +412,9 @@ export const getBarberosall = async (req, res) => {
 
 export const actualizarBarbero = async (req, res) => {
   try {
+
+    const token = req.headers.authorization;
+    await verificarTokenYObtenerUsuario(token);
     const { id } = req.params;
     const {
       barbero,
@@ -404,7 +446,12 @@ export const actualizarBarbero = async (req, res) => {
 
     res.status(200).json(barberoEncontrado);
   } catch (error) {
-    console.error(error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
@@ -435,6 +482,9 @@ export const filtrarBarberia = async (req, res) => {
   } catch (error) {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
     }
     res.status(500).json({ message: 'Hubo un error al procesar tu solicitud' });
   }

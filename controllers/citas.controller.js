@@ -26,6 +26,9 @@ export const getCitas = async (req, res) => {
     return res.status(200).json(response);
   } catch (error) {
     if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
       return res.status(401).json({ message: "Token inválido" });
     }
   }
@@ -42,6 +45,9 @@ export const getCita = async (req, res) => {
     res.status(200).json(cita);
   } catch (error) {
     if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
       return res.status(401).json({ message: "Token inválido" });
     }
     res.status(500).json({
@@ -128,6 +134,9 @@ export const postCita = async (req, res) => {
 
   } catch (error) {
     if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
       return res.status(401).json({ message: "Token inválido" });
     }
 

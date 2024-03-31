@@ -52,6 +52,9 @@ export const putUsuario = async (req, res) => {
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
     }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(400).json({ message: "No se pudo actualizar" });
   }
 };
@@ -87,7 +90,12 @@ export const cambioContrasena = async (req, res) => {
 
     res.status(200).json({ message: "Contraseña actualizada exitosamente" });
   } catch (error) {
-    console.error(error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -96,17 +104,21 @@ export const cambioContrasena = async (req, res) => {
 export const obtenerUsuario = async (req, res) => {
   try {
     const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "Token no proporcionado" });
+    }
 
     const usuario = await verificarTokenYObtenerUsuario(token);
 
     res.status(200).json({ usuario });
   } catch (error) {
-    console.error(error);
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
     }
-
-    res.status(500).json({ message: "Error interno del servidor" });
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
+    res.status(401).json(error.message);
   }
 };
 
@@ -124,7 +136,12 @@ export const deleteAccount = async (req, res) => {
         .json({ message: "No se encontró la cuenta para eliminar" });
     }
   } catch (error) {
-    console.error(error);
+    if (error.message === "Token expirado") {
+      return res.status(401).json({ message: "Token expirado" });
+    }
+    if (error.message === "Token inválido") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
     return res.status(500).json({ message: "Error al eliminar la cuenta" });
   }
 };
@@ -157,6 +174,10 @@ export const trabajoEnMiBarberia = async (req, res) => {
     console.error(error);
     if (error.message === "Token expirado") {
       return res.status(401).json({ message: "Token expirado" });
+    }
+
+    if (error.message === "Token invalido") {
+      return res.status(401).json({ message: "Token invalido" });
     }
     res.status(500).json({ message: "Error interno del servidor" });
   }
