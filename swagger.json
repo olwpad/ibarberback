@@ -1,205 +1,381 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
-    "title": "API de Citas",
-    "version": "1.0.0"
+    "title": "API iBarber",
+    "version": "1.0.0",
+    "description": "API para el sistema iBarber, que permite registrar usuarios, iniciar sesión, recuperar cuentas, actualizar información de usuario y más."
   },
+  "basePath": "/api",
   "tags": [
-    {
-      "name": "Citas",
-      "description": "Endpoints para gestionar citas."
-    }
+    { "name": "Autenticación", "description": "Endpoints relacionados con la autenticación de usuarios." },
+    { "name": "Usuario", "description": "Endpoints relacionados con la gestión de usuarios." }
   ],
-  "components": {
-    "schemas": {
-      "Cita": {
-        "type": "object",
-        "properties": {
-          "cliente": {
-            "type": "string",
-            "description": "ID del cliente para la cita."
-          },
-          "barbero": {
-            "type": "string",
-            "description": "ID del barbero para la cita."
-          },
-          "fecha": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Fecha y hora de la cita."
-          }
-        }
-      }
-    }
-  },
   "paths": {
-    "/api/citas/{usuario}": {
-      "get": {
-        "summary": "Obtener citas de un usuario",
-        "description": "Obtiene las citas de un usuario (cliente o barbero) por su usuario.",
+    "/Registrar": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Registrar un nuevo usuario",
+        "description": "Registra un nuevo usuario con la información proporcionada.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
         "parameters": [
           {
-            "in": "path",
-            "name": "usuario",
+            "in": "body",
+            "name": "body",
+            "description": "Información del usuario a registrar",
             "required": true,
-            "description": "Usuario único del cual se desean obtener las citas.",
             "schema": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "nombres": { "type": "string" },
+                "apellidos": { "type": "string" },
+                "usuario": { "type": "string" },
+                "password": { "type": "string" },
+                "email": { "type": "string", "format": "email" }
+              }
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Cita encontrada. Devuelve las citas correspondientes al usuario."
+            "description": "Registro exitoso. Se ha registrado el usuario correctamente."
           },
-          "200 ": {
-            "description": "No tienes citas agendadas"
-          },
-          "404": {
-            "description": "No se encontró el usuario"
+          "400": {
+            "description": "Error en la solicitud. Puede ser debido a que el nombre de usuario o correo ya están registrados."
           },
           "500": {
-            "description": "Error al obtener las citas."
-          }
-        }
-      },
-      "post": {
-        "summary": "Crear una nueva cita",
-        "description": "Crea una nueva cita con la información proporcionada.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Cita"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Cita creada correctamente.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Cita"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Barbero no encontrado o no disponible."
-          },
-          "500": {
-            "description": "Error al crear la cita."
+            "description": "Error interno del servidor. Hubo un problema al procesar la solicitud."
           }
         }
       }
     },
-    "/api/citas/{id}": {
-      "get": {
-        "summary": "Obtener una cita por su ID",
-        "description": "Obtiene una cita por su ID.",
+    "/login": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Iniciar sesión de usuario",
+        "description": "Inicia sesión de un usuario proporcionando el nombre de usuario y contraseña.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
         "parameters": [
           {
-            "in": "path",
-            "name": "id",
+            "in": "body",
+            "name": "body",
+            "description": "Credenciales de inicio de sesión",
             "required": true,
-            "description": "ID de la cita que se desea obtener.",
             "schema": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "usuario": { "type": "string" },
+                "password": { "type": "string" }
+              }
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Cita encontrada. Devuelve la cita correspondiente al ID proporcionado.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Cita"
-                }
-              }
-            }
+            "description": "Inicio de sesión exitoso. Se ha iniciado sesión correctamente."
           },
-          "404": {
-            "description": "La cita no fue encontrada."
+          "401": {
+            "description": "Credenciales incorrectas. El usuario no fue encontrado o la contraseña es incorrecta."
           },
           "500": {
-            "description": "Error al obtener la cita."
+            "description": "Error interno del servidor. Hubo un problema al procesar la solicitud."
           }
         }
-      },
+      }
+    },
+    "/recuperar": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Recuperar cuenta de usuario",
+        "description": "Recupera la cuenta de usuario enviando un correo electrónico con una nueva contraseña generada automáticamente.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Correo electrónico asociado a la cuenta a recuperar",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "string", "format": "email" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recuperación exitosa. Se ha enviado un correo electrónico con las credenciales de acceso."
+          },
+          "404": {
+            "description": "Correo electrónico no encontrado. El correo electrónico proporcionado no está asociado a ninguna cuenta."
+          },
+          "500": {
+            "description": "Error interno del servidor. Hubo un problema al procesar la solicitud."
+          }
+        }
+      }
+    },
+    "/usuario": {
       "put": {
-        "summary": "Actualizar una cita existente",
-        "description": "Actualiza una cita existente con la información proporcionada.",
+        "tags": ["Usuario"],
+        "summary": "Actualizar información del usuario",
+        "description": "Actualiza la información del usuario autenticado utilizando el token de autorización en el encabezado.",
+        "produces": ["application/json"],
         "parameters": [
           {
-            "in": "path",
-            "name": "id",
+            "in": "header",
+            "name": "Authorization",
+            "description": "Token de autorización JWT",
             "required": true,
-            "description": "ID de la cita que se desea actualizar.",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Datos a actualizar del usuario",
+            "required": true,
             "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Cita"
+              "type": "object",
+              "properties": {
+                "nombres": { "type": "string" },
+                "apellidos": { "type": "string" },
+                "telefono": { "type": "string" },
+                "nombre_ciudad": { "type": "string" },
+                "correo": { "type": "string", "format": "email" },
+                "active": { "type": "boolean" },
+                "biografia": { "type": "string" },
+                "fotoPerfil": { "type": "string", "description": "Imagen codificada en base64" }
               }
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Cita actualizada correctamente.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Cita"
+            "description": "Información del usuario actualizada exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "urlImagen": { "type": "string", "description": "URL de la imagen de perfil actualizada" }
+              }
+            }
+          },
+          "401": {
+            "description": "Token expirado o no válido",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "400": {
+            "description": "No se pudo actualizar la información del usuario",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+      },
+      "/usuario-delete":{"delete": {
+        "tags": ["Usuario"],
+        "summary": "Eliminar cuenta de usuario",
+        "description": "Elimina la cuenta del usuario autenticado utilizando el token de autorización en el encabezado.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Token de autorización JWT",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cuenta eliminada exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "401": {
+            "description": "Token expirado o no válido",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "404": {
+            "description": "No se encontró la cuenta para eliminar",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }},
+      "/date-user": {"get": {
+        "tags": ["Usuario"],
+
+        "summary": "Obtener información del usuario",
+        "description": "Obtiene la información del usuario autenticado utilizando el token de autorización en el encabezado.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Token de autorización JWT",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Información del usuario obtenida exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "usuario": {
+                  "type": "object",
+                  "description": "Información del usuario",
+                  "properties": {
+                    "nombre": { "type": "string", "example": "Juan" },
+                    "apellido": { "type": "string", "example": "Pérez" },
+                    "email": { "type": "string", "format": "email", "example": "juan@example.com" }
+                  }
                 }
               }
             }
           },
-          "404": {
-            "description": "La cita no fue encontrada o el barbero no existe."
+          "401": {
+            "description": "Token expirado o no válido",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
           },
           "500": {
-            "description": "Error al actualizar la cita."
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
           }
         }
-      },
-      "delete": {
-        "summary": "Eliminar una cita existente",
-        "description": "Elimina una cita existente por su ID.",
+    }},
+    "/usuario-password": {
+      "put": {
+        "tags": ["Usuario"],
+
+        "summary": "Cambiar contraseña del usuario",
+        "description": "Permite al usuario cambiar su contraseña.",
+        "produces": ["application/json"],
         "parameters": [
           {
-            "in": "path",
-            "name": "id",
+            "in": "header",
+            "name": "Authorization",
+            "description": "Token de autorización JWT",
             "required": true,
-            "description": "ID de la cita que se desea eliminar.",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Nueva y antigua contraseña del usuario",
+            "required": true,
             "schema": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "contrasenaActual": { "type": "string", "description": "Contraseña actual del usuario" },
+                "nuevaContrasena": { "type": "string", "description": "Nueva contraseña del usuario" }
+              }
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Cita eliminada correctamente."
+            "description": "Contraseña actualizada exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "401": {
+            "description": "Token expirado o no válido",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
           },
           "404": {
-            "description": "La cita no fue encontrada."
+            "description": "Usuario no encontrado",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
           },
           "500": {
-            "description": "Error al eliminar la cita."
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
           }
         }
       }
     }
   }
 }
-
