@@ -47,8 +47,12 @@ export const crearResena = async (req, res) => {
         const token = req.headers.authorization;
         const { usuario } = await verificarTokenYObtenerUsuario(token);
 
-        // Filtrar las reseñas por el usuario obtenido
-        const reviews = await Review.find({ usuario: usuario });
+        // Filtrar las reseñas por el usuario obtenido, y obtener los datos de la barbería relacionada
+        const reviews = await Review.find({ usuario: usuario })
+        .populate({
+          path: 'barberiaId',
+          select: 'nombre_barberia fotoPerfil' // Selecciona solo los campos que deseas mostrar de la barbería
+        });
 
         // Responder con las reseñas encontradas
         res.status(200).json(reviews);
@@ -59,7 +63,7 @@ export const crearResena = async (req, res) => {
       if (error.message === "Token inválido") {
         return res.status(401).json({ message: "Token inválido" });
       }
-        res.status(500).json({ message: 'Hubo un error al procesar tu solicitud' });
+        res.status(500).json({ message: 'Hubo un error al procesar tu solicitud', mensaje: error.message });
     }
 }
 export const obtenerResenasTodos = async (req, res) => {

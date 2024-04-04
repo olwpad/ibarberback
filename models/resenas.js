@@ -10,14 +10,13 @@ const reviewSchema = new Schema({
   barbero:String,
   cita: {
     type: SchemaTypes.ObjectId,
-    ref: 'citas'
+    ref: 'Cita'
   },
   usuario: String,
   barberiaId: {
     type: SchemaTypes.ObjectId,
-    ref: 'barberias'
+    ref: 'Barberia'
   }
-  
 });
 
 const Review = model('Review', reviewSchema);
